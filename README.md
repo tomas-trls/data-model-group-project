@@ -70,3 +70,4 @@ python scripts/word_count.py final/group_coursework.ipynb
 - Max 3,000 words of markdown (tables, figures and captions count; code and code comments don't).
 - AI use is **Assistive**: log every use on the Trello AI usage log card.
 - References in Harvard **or** Vancouver, consistently.
+
