@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
+
+# Large or intermediate data (raw data is committed only if small; otherwise link it in the notebook)
+data/processed/*
+!data/processed/.gitkeep
