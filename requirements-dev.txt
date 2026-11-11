@@ -1,0 +1,5 @@
+# Tools used by CI (and handy locally)
+pytest
+nbmake
+nbqa
+ruff

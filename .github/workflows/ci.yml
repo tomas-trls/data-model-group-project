@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Lint and run notebooks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Lint notebooks (syntax errors, undefined names)
+        run: nbqa ruff notebooks final --select E9,F63,F7,F82
+
+      - name: Run every notebook top to bottom
+        run: pytest --nbmake --nbmake-timeout=600 notebooks final
+
+      - name: Word count (max 3,000, appendices excluded)
+        run: python scripts/word_count.py final/group_coursework.ipynb --max 3000
+
+  build:
+    name: Build submission
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Execute the final notebook and export HTML
+        run: |
+          mkdir -p build
+          jupyter nbconvert --to notebook --execute final/group_coursework.ipynb --output-dir build
+          jupyter nbconvert --to html build/group_coursework.ipynb --output-dir build
+
+      - name: Upload submission-ready files
+        uses: actions/upload-artifact@v4
+        with:
+          name: submission-${{ github.sha }}
+          path: build/
+          retention-days: 30

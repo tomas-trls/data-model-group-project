@@ -31,11 +31,29 @@ nbstripout --install
 `nbstripout` removes notebook outputs on commit so merges don't conflict.
 
 ## Workflow
-1. Pick up your Trello card and move it to **In Progress**.
-2. Work on a branch: `git checkout -b w2-eda-correlations`.
-3. Open a pull request using the template; your review pair approves it.
-4. Merge, then move the Trello card to **Done**.
-5. Never push directly to `main`.
+Every piece of work has a Trello ticket with a unique code, e.g. **[BA-0004]**.
+
+1. Move your Trello card to **In Progress**.
+2. Create a branch named after the code: `git checkout -b BA-0004-handle-missing-values`.
+3. Open a pull request whose title **starts with the code**: `[BA-0004] Handle missing values`.
+4. CI must pass and your review pair must approve before merging.
+5. Merge, then move the Trello card to **Done**.
+6. Never push directly to `main`.
+
+## CI/CD (GitHub Actions)
+| Check | When | What it does |
+|---|---|---|
+| **Ticket code in title** | every PR | Blocks the merge unless the title starts with `[BA-XXXX] ` |
+| **Lint and run notebooks** | every PR + push to `main` | Flags syntax errors and undefined names, runs every notebook top to bottom, checks the final word count ≤ 3,000 (appendices excluded) |
+| **Build submission** | push to `main` | Executes the final notebook and uploads the run `.ipynb` + HTML as a downloadable artifact |
+
+Run the same checks locally before opening a PR:
+```bash
+pip install -r requirements-dev.txt
+nbqa ruff notebooks final --select E9,F63,F7,F82
+pytest --nbmake notebooks final
+python scripts/word_count.py final/group_coursework.ipynb
+```
 
 ## Key dates
 | Date | Milestone |

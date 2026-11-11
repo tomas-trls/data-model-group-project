@@ -1,0 +1,22 @@
+name: PR title
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  ticket-code:
+    name: Ticket code in title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the title starts with a Trello ticket code [BA-XXXX]
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          pattern='^\[BA-[0-9]{4}\] .+'
+          if [[ "$TITLE" =~ $pattern ]]; then
+            echo "OK: $TITLE"
+          else
+            echo "::error::PR title must start with the Trello ticket code, e.g. '[BA-0004] Handle missing values'. Got: '$TITLE'"
+            exit 1
+          fi
