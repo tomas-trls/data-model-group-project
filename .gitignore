@@ -16,3 +16,4 @@ env/
 # Large or intermediate data (raw data is committed only if small; otherwise link it in the notebook)
 data/processed/*
 !data/processed/.gitkeep
+data/raw/UNGDC_*.tar.gz
